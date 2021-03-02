@@ -4,6 +4,7 @@ import React, { InputHTMLAttributes } from 'react'
 
 type InputFieldProps = InputHTMLAttributes<HTMLInputElement> & {name: string, label: string, }; //require field name
 
+//size:_ not passing in size
 export const InputField: React.FC<InputFieldProps> = ({label, size:_, ...props}) => {
     const [field, {error}] = useField(props);
     return (
