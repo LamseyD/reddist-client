@@ -1,23 +1,18 @@
-// import {
-//   Link as ChakraLink,
-//   Text,
-//   Code,
-//   List,
-//   ListIcon,
-//   ListItem,
-// } from '@chakra-ui/react'
-// import { CheckCircleIcon, LinkIcon } from '@chakra-ui/icons'
-// import { Hero } from '../components/Hero'
-// import { Container } from '../components/Container'
-// import { Main } from '../components/Main'
-// import { DarkModeSwitch } from '../components/DarkModeSwitch'
-// import { CTA } from '../components/CTA'
-// import { Footer } from '../components/Footer'
+import { withUrqlClient } from "next-urql"
+import React from "react"
+import { Navbar } from "../components/Navbar"
+import { usePostsQuery } from "../generated/graphql"
+import { createUrqlClient } from "../util/createUrqlClient"
 
-const Index = () => (
-  <div>
-    Hello World
-  </div>
-)
-
-export default Index
+const Index = () => {
+  const [{data}] = usePostsQuery();
+  return (
+    <div>
+      <Navbar/>
+      Hello world
+      {!data ? null : data.posts.map((p) => <div key={p.id}> {p.title} </div>)}
+    </div>
+  )
+}
+//don't server side render all the pages, server side render on pages with dynamic data
+export default withUrqlClient(createUrqlClient, {ssr: true})(Index)
