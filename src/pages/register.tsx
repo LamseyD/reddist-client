@@ -6,6 +6,8 @@ import { InputField } from '../components/InputField';
 import { useRegisterMutation } from '../generated/graphql';
 import { toErrorMap } from '../util/toErrorMap';
 import { useRouter } from "next/router"
+import { withUrqlClient } from 'next-urql';
+import { createUrqlClient } from '../util/createUrqlClient';
 interface registerProps {
 
 }
@@ -19,9 +21,9 @@ const Register: React.FC<registerProps> = ({}) => {
             <Wrapper variant = "small">
                 {/* return a promise, stop spinning when promise is resolved */}
                 <Formik 
-                    initialValues = {{username: "", password: ""}} 
+                    initialValues = {{username: "", password: "", email: ""}} 
                     onSubmit = { async (values, {setErrors}) => {
-                        const response = await register(values); 
+                        const response = await register({options: values}); 
                         if (response.data?.register.errors){
                             setErrors(toErrorMap(response.data.register.errors));
                         } else if (response.data?.register.user){
@@ -34,6 +36,7 @@ const Register: React.FC<registerProps> = ({}) => {
                         <Form>
                             <Box mt={4}>
                                 <InputField name='username' placeholder="username" label="Username"/>
+                                <InputField name='email' placeholder="email" label="Email"/>
                                 <InputField name='password' placeholder="password" label="Password" type="password"/>
                             </Box>
                             <Button mt={4} type="submit" variantcolor="teal" isLoading={isSubmitting}> Register </Button>
@@ -47,4 +50,4 @@ const Register: React.FC<registerProps> = ({}) => {
 }
 
 
-export default Register
+export default withUrqlClient(createUrqlClient)(Register);
