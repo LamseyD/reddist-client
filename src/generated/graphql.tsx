@@ -33,6 +33,9 @@ export type Post = {
   createdAt: Scalars['String'];
   updatedAt: Scalars['String'];
   title: Scalars['String'];
+  creatorId: Scalars['Float'];
+  text: Scalars['String'];
+  points: Scalars['Float'];
 };
 
 export type User = {
@@ -58,7 +61,7 @@ export type Mutation = {
 
 
 export type MutationCreatePostArgs = {
-  title: Scalars['String'];
+  options: PostInput;
 };
 
 
@@ -92,6 +95,11 @@ export type MutationRegisterArgs = {
 export type MutationLoginArgs = {
   password: Scalars['String'];
   username: Scalars['String'];
+};
+
+export type PostInput = {
+  title: Scalars['String'];
+  text: Scalars['String'];
 };
 
 export type UserResponse = {
@@ -144,6 +152,19 @@ export type ChangePasswordMutation = (
   & { changePassword: (
     { __typename?: 'UserResponse' }
     & RegularUserResponseFragment
+  ) }
+);
+
+export type CreatePostMutationVariables = Exact<{
+  options: PostInput;
+}>;
+
+
+export type CreatePostMutation = (
+  { __typename?: 'Mutation' }
+  & { createPost: (
+    { __typename?: 'Post' }
+    & Pick<Post, 'id' | 'creatorId' | 'text' | 'title' | 'createdAt' | 'updatedAt' | 'points'>
   ) }
 );
 
@@ -247,6 +268,23 @@ export const ChangePasswordDocument = gql`
 
 export function useChangePasswordMutation() {
   return Urql.useMutation<ChangePasswordMutation, ChangePasswordMutationVariables>(ChangePasswordDocument);
+};
+export const CreatePostDocument = gql`
+    mutation createPost($options: PostInput!) {
+  createPost(options: $options) {
+    id
+    creatorId
+    text
+    title
+    createdAt
+    updatedAt
+    points
+  }
+}
+    `;
+
+export function useCreatePostMutation() {
+  return Urql.useMutation<CreatePostMutation, CreatePostMutationVariables>(CreatePostDocument);
 };
 export const ForgotPasswordDocument = gql`
     mutation forgotPassword($email: String!) {
