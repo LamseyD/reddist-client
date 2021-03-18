@@ -9,6 +9,7 @@ import { useRouter } from "next/router";
 import NextLink from 'next/link';
 import { createUrqlClient } from '../util/createUrqlClient';
 import { withUrqlClient } from 'next-urql';
+import { Layout } from '../components/Layout';
 interface loginProps {
 
 }
@@ -18,7 +19,7 @@ const Login: React.FC<loginProps> = ({}) => {
     const [,login] = useLoginMutation(); //first argument is the type of operation, second argument is our function
     const router = useRouter();
     return (
-        <div>
+        <Layout>
             <Wrapper variant = "small">
                 {/* return a promise, stop spinning when promise is resolved */}
                 <Formik 
@@ -28,7 +29,11 @@ const Login: React.FC<loginProps> = ({}) => {
                         if (response.data?.login.errors){
                             setErrors(toErrorMap(response.data.login.errors));
                         } else if (response.data?.login.user){
-                            router.push("/");
+                            if (typeof router.query.next === 'string'){
+                                router.push(router.query.next);
+                            } else {
+                                router.push("/");
+                            }
                         }
                     }}
                 > 
@@ -52,7 +57,7 @@ const Login: React.FC<loginProps> = ({}) => {
                     )}
                 </Formik>
             </Wrapper>
-        </div>
+        </Layout>
 
     )
 }

@@ -8,6 +8,7 @@ import { toErrorMap } from '../util/toErrorMap';
 import { useRouter } from "next/router"
 import { withUrqlClient } from 'next-urql';
 import { createUrqlClient } from '../util/createUrqlClient';
+import { Layout } from '../components/Layout';
 interface registerProps {
 
 }
@@ -17,7 +18,7 @@ const Register: React.FC<registerProps> = ({}) => {
     const [,register] = useRegisterMutation(); //first argument is the type of operation, second argument is our function
     const router = useRouter();
     return (
-        <div>
+        <Layout>
             <Wrapper variant = "small">
                 {/* return a promise, stop spinning when promise is resolved */}
                 <Formik 
@@ -44,7 +45,7 @@ const Register: React.FC<registerProps> = ({}) => {
                     )}
                 </Formik>
             </Wrapper>
-        </div>
+        </Layout>
 
     )
 }
