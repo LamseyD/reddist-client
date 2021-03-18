@@ -39,7 +39,12 @@ export const Navbar: React.FC<NavbarProps> = ({ }) => {
         )
     }
     return (
-        <Flex bg='tomato' p={4}>
+        <Flex zIndex={5} position="sticky" top={0} bg='tomato' p={4}>
+            <NextLink href="/">
+                <Link>
+                    Home
+                </Link>
+            </NextLink>
             <Box ml={"auto"}>
                 {/* component to go to a link for Next.js */}
                 {body}
