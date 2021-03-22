@@ -4,6 +4,7 @@ import { pipe, tap } from 'wonka'; //wonka comes with urql
 import { LoginMutation, LogoutMutation, MeDocument, MeQuery, RegisterMutation } from "../generated/graphql";
 import { betterUpdateQuery } from './betterUpdateQuery';
 import router from "next/router";
+import { cursorPagination } from './cursorPagination';
 
 //global error checker
 const errorExchange: Exchange = ({forward}) => ops$ => {
@@ -26,8 +27,17 @@ export const createUrqlClient = (ssrExchange: any) => ({
     exchanges: [
         dedupExchange,
         cacheExchange({
+            keys: {
+                PaginatedPosts: () => null
+            },
+            resolvers: {
+                Query: {
+                    posts: cursorPagination()
+                }
+            },
             updates: {
                 Mutation: {
+                    //@ts-ignore
                     login: (_result, args, cache, info) => {
                         betterUpdateQuery<LoginMutation, MeQuery>(
                             cache,
@@ -44,6 +54,7 @@ export const createUrqlClient = (ssrExchange: any) => ({
                             }
                         );
                     },
+                    //@ts-ignore
                     register: (_result, args, cache, info) => {
                         betterUpdateQuery<RegisterMutation, MeQuery>(
                             cache,
@@ -60,6 +71,7 @@ export const createUrqlClient = (ssrExchange: any) => ({
                             }
                         );
                     },
+                    //@ts-ignore
                     logout: (_result, args, cache, info) => {
                         //me query return null
                         betterUpdateQuery<LogoutMutation, MeQuery>(
