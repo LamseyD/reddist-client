@@ -1,4 +1,4 @@
-import { cacheExchange } from '@urql/exchange-graphcache';
+import { cacheExchange, Cache } from '@urql/exchange-graphcache';
 import { dedupExchange, Exchange, fetchExchange } from "urql";
 import { pipe, tap } from 'wonka'; //wonka comes with urql
 import { LoginMutation, LogoutMutation, MeDocument, MeQuery, RegisterMutation } from "../generated/graphql";
@@ -7,7 +7,7 @@ import router from "next/router";
 import { cursorPagination } from './cursorPagination';
 
 //global error checker
-const errorExchange: Exchange = ({forward}) => ops$ => {
+const errorExchange: Exchange = ({ forward }) => ops$ => {
     return pipe(
         forward(ops$),
         tap(({ error }) => {
@@ -16,6 +16,14 @@ const errorExchange: Exchange = ({forward}) => ops$ => {
             }
         })
     )
+}
+
+function invalidateAllPosts(cache: Cache) {
+    const allFields = cache.inspectFields("Query");
+    const fieldInfos = allFields.filter((info) => info.fieldName === "posts");
+    fieldInfos.forEach((fi) => {
+        cache.invalidate("Query", "posts", fi.arguments || {});
+    });
 }
 
 export const createUrqlClient = (ssrExchange: any) => ({
@@ -35,8 +43,15 @@ export const createUrqlClient = (ssrExchange: any) => ({
                     posts: cursorPagination()
                 }
             },
+            //updates cache when any of these are invoked
             updates: {
                 Mutation: {
+                    //invalidate query so that refetch the first query
+                    //@ts-ignore
+                    createPost: (_result, args, cache, info) => {
+                        console.log("HELLO WORLD")
+                        invalidateAllPosts(cache);
+                    },
                     //@ts-ignore
                     login: (_result, args, cache, info) => {
                         betterUpdateQuery<LoginMutation, MeQuery>(

@@ -56,10 +56,7 @@ export const cursorPagination = (
     //fieldargs are what we passing in as variables
     return (_parent, fieldArgs, cache, info) => {
         const { parentKey: entityKey, fieldName } = info;
-        console.log(entityKey, fieldName); //Query posts
-
         const allFields = cache.inspectFields(entityKey); //gets all the fields in the cache; in this case Queries.
-        console.log(allFields);
         // {
         //     fieldKey: 'posts({"limit":10})',
         //     fieldName: 'posts',
