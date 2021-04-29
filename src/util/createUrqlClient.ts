@@ -1,10 +1,11 @@
 import { cacheExchange, Cache } from '@urql/exchange-graphcache';
 import { dedupExchange, Exchange, fetchExchange } from "urql";
 import { pipe, tap } from 'wonka'; //wonka comes with urql
-import { LoginMutation, LogoutMutation, MeDocument, MeQuery, RegisterMutation } from "../generated/graphql";
+import { LoginMutation, LogoutMutation, MeDocument, MeQuery, RegisterMutation, VoteMutationVariables } from "../generated/graphql";
 import { betterUpdateQuery } from './betterUpdateQuery';
 import router from "next/router";
 import { cursorPagination } from './cursorPagination';
+import gql from 'graphql-tag';
 
 //global error checker
 const errorExchange: Exchange = ({ forward }) => ops$ => {
@@ -46,13 +47,33 @@ export const createUrqlClient = (ssrExchange: any) => ({
             //updates cache when any of these are invoked
             updates: {
                 Mutation: {
+                    vote: (_result, args, cache, info) => {
+                        // updating the cache by graphql fragments
+                        const {postId, value} =  args as VoteMutationVariables;
+                        const data = cache.readFragment(
+                            gql`
+                                fragment _ on Post {
+                                    id
+                                    points
+                                }
+                            `, { id: postId } as any
+                        )
+                        if (data) {
+                            const newPoints = data.points + value;
+                            cache.writeFragment(
+                                gql`
+                                    fragment _ on Post{
+                                        points
+                                    }
+                                `,
+                                {id: postId, points: newPoints} 
+                            )
+                        }
+                    },
                     //invalidate query so that refetch the first query
-                    //@ts-ignore
                     createPost: (_result, args, cache, info) => {
-                        console.log("HELLO WORLD")
                         invalidateAllPosts(cache);
                     },
-                    //@ts-ignore
                     login: (_result, args, cache, info) => {
                         betterUpdateQuery<LoginMutation, MeQuery>(
                             cache,
@@ -69,7 +90,6 @@ export const createUrqlClient = (ssrExchange: any) => ({
                             }
                         );
                     },
-                    //@ts-ignore
                     register: (_result, args, cache, info) => {
                         betterUpdateQuery<RegisterMutation, MeQuery>(
                             cache,
@@ -86,7 +106,6 @@ export const createUrqlClient = (ssrExchange: any) => ({
                             }
                         );
                     },
-                    //@ts-ignore
                     logout: (_result, args, cache, info) => {
                         //me query return null
                         betterUpdateQuery<LogoutMutation, MeQuery>(
