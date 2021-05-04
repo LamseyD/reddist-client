@@ -55,19 +55,34 @@ export const createUrqlClient = (ssrExchange: any) => ({
                                 fragment _ on Post {
                                     id
                                     points
+                                    voteStatus
                                 }
                             `, { id: postId } as any
                         )
                         if (data) {
-                            const newPoints = data.points + value;
-                            cache.writeFragment(
-                                gql`
-                                    fragment _ on Post{
-                                        points
-                                    }
-                                `,
-                                {id: postId, points: newPoints} 
-                            )
+                            if (data.voteStatus === value){
+                                const newPoints = data.points - value;
+                                cache.writeFragment(
+                                    gql`
+                                        fragment _ on Post{
+                                            points
+                                            voteStatus
+                                        }
+                                    `,
+                                    {id: postId, points: newPoints, voteStatus: null} as any
+                                )
+                            } else {
+                                const newPoints = data.points + value;
+                                cache.writeFragment(
+                                    gql`
+                                        fragment _ on Post{
+                                            points
+                                            voteStatus
+                                        }
+                                    `,
+                                    {id: postId, points: newPoints, voteStatus: value} as any
+                                )
+                            }
                         }
                     },
                     //invalidate query so that refetch the first query
