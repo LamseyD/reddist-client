@@ -13,7 +13,6 @@ const Index = () => {
   const [{ data, fetching }] = usePostsQuery({
     variables
   });
-
   if (!fetching && !data) {
     console.log("Something went wrong", data);
     return <div> Something went wrong. </div>
@@ -30,12 +29,10 @@ const Index = () => {
       {(!data && fetching) ? <Spinner /> :
         <Stack spacing={8} mb={4}>
           {data!.posts.posts.map((p) => {
-            if (p.id === 572)
-              console.log(p)
             return <Post post={p}/>
           })}
         </Stack>
-        }
+      }
       {data && data.posts.hasMore ? <Flex>
         <Button onClick={() => {
           setVariables({
@@ -48,4 +45,4 @@ const Index = () => {
   )
 }
 //don't server side render all the pages, server side render on pages with dynamic data
-export default withUrqlClient(createUrqlClient, { ssr: true })(Index)
+export default withUrqlClient(createUrqlClient, { ssr: false })(Index)
