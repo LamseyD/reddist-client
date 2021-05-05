@@ -1,11 +1,10 @@
-import { Heading, Stack } from "@chakra-ui/layout";
+import { Stack } from "@chakra-ui/layout";
 import { Button, Flex, Spinner } from "@chakra-ui/react";
 import { withUrqlClient } from "next-urql";
 import React, { useState } from "react";
 import { Layout } from "../components/Layout";
 import { usePostsQuery } from "../generated/graphql";
 import { createUrqlClient } from "../util/createUrqlClient";
-import NextLink from "next/link";
 import { Post } from "../components/Post";
 
 const Index = () => {
@@ -20,12 +19,6 @@ const Index = () => {
 
   return (
     <Layout>
-      <Flex>
-        <Heading> New Posts </Heading>
-        <NextLink href="/createPost">
-          <Button ml="auto" mb={4}> Create Post </Button>
-        </NextLink>
-      </Flex>
       {(!data && fetching) ? <Spinner /> :
         <Stack spacing={8} mb={4}>
           {data!.posts.posts.map((p) => {
