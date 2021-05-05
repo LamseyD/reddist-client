@@ -45,4 +45,4 @@ const Index = () => {
   )
 }
 //don't server side render all the pages, server side render on pages with dynamic data
-export default withUrqlClient(createUrqlClient, { ssr: false })(Index)
+export default withUrqlClient(createUrqlClient, { ssr: true })(Index)
