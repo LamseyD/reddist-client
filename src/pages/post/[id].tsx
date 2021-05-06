@@ -4,22 +4,17 @@ import { withUrqlClient } from 'next-urql';
 import { useRouter } from 'next/router';
 import React from 'react'
 import { Layout } from '../../components/Layout';
-import { usePostQuery } from '../../generated/graphql';
 import { createUrqlClient } from '../../util/createUrqlClient';
+import { useGetPostFromURL } from '../../util/useGetPostFromURL';
 
 interface PostPageProps {
 
 }
 
 const PostPage: React.FC<PostPageProps> = ({}) => {
-    const router = useRouter();
-    const validID = typeof router.query.id === 'string' ? parseInt(router.query.id) : -1
-    const [{data, fetching}] = usePostQuery ({
-        pause: validID === -1,
-        variables: {
-            id: validID 
-        }
-    })
+    const router = useRouter()
+    const [{data, fetching }] = useGetPostFromURL()
+
 
     if (!fetching && !data?.post){
         return <Layout>

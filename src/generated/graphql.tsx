@@ -88,8 +88,8 @@ export type MutationCreatePostArgs = {
 
 
 export type MutationUpdatePostArgs = {
-  title?: Maybe<Scalars['String']>;
-  id: Scalars['Float'];
+  text?: Maybe<Scalars['String']>;
+  id: Scalars['Int'];
 };
 
 
@@ -254,6 +254,24 @@ export type RegisterMutation = (
   ) }
 );
 
+export type UpdatePostMutationVariables = Exact<{
+  id: Scalars['Int'];
+  text?: Maybe<Scalars['String']>;
+}>;
+
+
+export type UpdatePostMutation = (
+  { __typename?: 'Mutation' }
+  & { updatePost?: Maybe<(
+    { __typename?: 'Post' }
+    & Pick<Post, 'id' | 'text' | 'title' | 'updatedAt' | 'textSnippet'>
+    & { creator: (
+      { __typename?: 'User' }
+      & Pick<User, 'id' | 'username'>
+    ) }
+  )> }
+);
+
 export type VoteMutationVariables = Exact<{
   value: Scalars['Int'];
   postId: Scalars['Int'];
@@ -285,7 +303,7 @@ export type PostQuery = (
   { __typename?: 'Query' }
   & { post?: Maybe<(
     { __typename?: 'Post' }
-    & Pick<Post, 'title' | 'voteStatus' | 'points' | 'text' | 'creatorId'>
+    & Pick<Post, 'id' | 'title' | 'voteStatus' | 'points' | 'text' | 'creatorId'>
   )> }
 );
 
@@ -422,6 +440,25 @@ export const RegisterDocument = gql`
 export function useRegisterMutation() {
   return Urql.useMutation<RegisterMutation, RegisterMutationVariables>(RegisterDocument);
 };
+export const UpdatePostDocument = gql`
+    mutation updatePost($id: Int!, $text: String) {
+  updatePost(id: $id, text: $text) {
+    id
+    text
+    title
+    updatedAt
+    textSnippet
+    creator {
+      id
+      username
+    }
+  }
+}
+    `;
+
+export function useUpdatePostMutation() {
+  return Urql.useMutation<UpdatePostMutation, UpdatePostMutationVariables>(UpdatePostDocument);
+};
 export const VoteDocument = gql`
     mutation vote($value: Int!, $postId: Int!) {
   vote(value: $value, postId: $postId)
@@ -445,6 +482,7 @@ export function useMeQuery(options: Omit<Urql.UseQueryArgs<MeQueryVariables>, 'q
 export const PostDocument = gql`
     query post($id: Int!) {
   post(id: $id) {
+    id
     title
     voteStatus
     points
