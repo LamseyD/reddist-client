@@ -1,7 +1,7 @@
-import { ArrowUpIcon, ArrowDownIcon } from '@chakra-ui/icons';
+import { ArrowUpIcon, ArrowDownIcon, DeleteIcon } from '@chakra-ui/icons';
 import { Flex, IconButton, Heading, Text, Link } from '@chakra-ui/react';
 import React, { useState } from 'react'
-import { PostSnippetFragment, useVoteMutation } from '../generated/graphql';
+import { PostSnippetFragment, useDeletePostMutation, useVoteMutation } from '../generated/graphql';
 import NextLink from "next/link";
 interface PostProps {
     post: PostSnippetFragment;
@@ -11,6 +11,7 @@ interface PostProps {
 export const Post: React.FC<PostProps> = ({ post }) => {
     const [loadingState, setLoadingState] = useState<'upvote-loading' | 'downvote-loading' | 'not-loading'>('not-loading');
     const [, vote] = useVoteMutation();
+    const [, deletePost] = useDeletePostMutation();
     return (
         <Flex p={5} shadow="md" borderWidth="1px">
             <Flex direction="column" paddingRight={8} alignItems="center">
@@ -44,17 +45,22 @@ export const Post: React.FC<PostProps> = ({ post }) => {
                     aria-label="downvote"
                     icon={<ArrowDownIcon />}
                     isLoading={loadingState === 'downvote-loading'}
-
                 />
-
             </Flex>
-            <NextLink href="/post/[id]" as={`/post/${post.id}`}>
-                <Link flex="100%">
+            <Flex flexDirection="column" flex={1}>
+                <NextLink href="/post/[id]" as={`/post/${post.id}`}>
+                    <Link>
                         <Heading fontSize="xl"> {post.title} </Heading>
                         <Text> posted by {post.creator.username} </Text>
-                        <Text mt={4}> {post.textSnippet} </Text>
-                </Link>
-            </NextLink>
+                    </Link>
+                </NextLink>
+                <Flex>
+                    <Text mt={4}> {post.textSnippet} </Text>
+                    <IconButton onClick={() => deletePost({ id: post.id })} mt={4} ml="auto" aria-label="delete" icon={<DeleteIcon />} />
+                </Flex>
+
+            </Flex>
+
         </Flex>
     );
 }

@@ -57,6 +57,9 @@ export const createUrqlClient = (ssrExchange: any, ctx: any) => {
                 //updates cache when any of these are invoked
                 updates: {
                     Mutation: {
+                        deletePost: (_result, args, cache, info) => {
+                            invalidateAllPosts(cache);
+                        },
                         vote: (_result, args, cache, info) => {
                             // updating the cache by graphql fragments
                             const {postId, value} =  args as VoteMutationVariables;
