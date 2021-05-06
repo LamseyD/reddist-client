@@ -6,5 +6,9 @@ query post ($id: Int!){
     points
     text
     creatorId
+    creator{
+      id
+      username
+    }
   }
 }

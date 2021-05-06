@@ -304,6 +304,10 @@ export type PostQuery = (
   & { post?: Maybe<(
     { __typename?: 'Post' }
     & Pick<Post, 'id' | 'title' | 'voteStatus' | 'points' | 'text' | 'creatorId'>
+    & { creator: (
+      { __typename?: 'User' }
+      & Pick<User, 'id' | 'username'>
+    ) }
   )> }
 );
 
@@ -488,6 +492,10 @@ export const PostDocument = gql`
     points
     text
     creatorId
+    creator {
+      id
+      username
+    }
   }
 }
     `;
