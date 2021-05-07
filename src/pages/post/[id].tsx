@@ -36,7 +36,7 @@ const PostPage: React.FC<PostPageProps> = ({ }) => {
 
     return (
         <Layout>
-            {(fetching && fetchingMe) ? (<Spinner />) : (
+            {(fetching && fetchingMe && !data) ? (<Spinner />) : (
                 <Flex minHeight={250} p={5} shadow="md" borderWidth="1px">
                     <Flex direction="column" paddingRight={8} alignItems="center">
                         <IconButton
@@ -72,16 +72,12 @@ const PostPage: React.FC<PostPageProps> = ({ }) => {
                         />
                     </Flex>
                     <Flex flexDirection="column" flex={1}>
-                        <NextLink href="/post/[id]" as={`/post/${data!.post!.id}`}>
-                            <Link>
-                                <Heading fontSize="xl"> {data!.post!.title} </Heading>
-                                <Text> posted by {data!.post!.creator.username} </Text>
-                            </Link>
-                        </NextLink>
+                        <Heading fontSize="xl"> {data!.post!.title} </Heading>
+                        <Text> posted by {data!.post!.creator.username} </Text>
                         <Text mt={4}> {data!.post!.text} </Text>
                     </Flex>
                     {((profile?.me?.id === data!.post!.creator.id) && !fetching) && <Flex ml="auto" direction="column">
-                        <NextLink href="post/edit/[id]" as={`/post/edit/${data!.post!.id}`}>
+                        <NextLink href="../post/edit/[id]" as={`../post/edit/${data!.post!.id}`}>
                             <Link>
                                 <IconButton aria-label="edit" icon={<EditIcon />} mb={2} />
                             </Link>

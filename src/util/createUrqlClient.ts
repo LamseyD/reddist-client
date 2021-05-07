@@ -117,6 +117,7 @@ export const createUrqlClient = (ssrExchange: any, ctx: any) => {
                                     }
                                 }
                             );
+                            invalidateAllPosts(cache);
                         },
                         register: (_result, args, cache, info) => {
                             betterUpdateQuery<RegisterMutation, MeQuery>(
@@ -133,6 +134,7 @@ export const createUrqlClient = (ssrExchange: any, ctx: any) => {
                                     }
                                 }
                             );
+                            invalidateAllPosts(cache);
                         },
                         logout: (_result, args, cache, info) => {
                             //me query return null
@@ -142,6 +144,7 @@ export const createUrqlClient = (ssrExchange: any, ctx: any) => {
                                 _result,
                                 () => ({ me: null })
                             );
+                            invalidateAllPosts(cache);
                         },
                     },
                 }

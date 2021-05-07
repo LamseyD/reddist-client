@@ -20,9 +20,8 @@ const EditPost: React.FC<EditPostProps> = ({ }) => {
 
     return (
         <Layout variant="small">
-            {(fetching && !data) ? <Spinner /> :
+            {(fetching || (typeof data === "undefined")) ? <Spinner /> :
                 <Box p={5} shadow="md" borderWidth="1px">
-
                     <Formik
                         initialValues={{ text: data?.post?.text }}
                         onSubmit={async (values) => {
